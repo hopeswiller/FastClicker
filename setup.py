@@ -6,7 +6,7 @@ from cx_Freeze import setup, Executable
 build_exe_options = {
     "packages": ["src"],
     "includes": ["pynput.keyboard._win32", "pynput.mouse._win32"],
-    "include_files": ["profile.xlsx"],
+    # "include_files": ["profile.xlsx"],
 }
 
 # base="Win32GUI" should be used only for Windows GUI app
@@ -19,7 +19,7 @@ setup(
     version="0.1",
     author="hopeswiller",
     author_email="davidba941@gmail.com",
-    description="My AutoClicker application!",
+    description="AutoClicker By Hopeswiller",
     options={"build_exe": build_exe_options},
-    executables=[Executable("src/clicker.py", base=base)],
+    executables=[Executable("app.py", base=base)],
 )

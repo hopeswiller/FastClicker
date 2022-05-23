@@ -5,4 +5,4 @@
 
 echo "Issueing Command"
 
-pipenv run python src/clicker.py
+pipenv run python app.py
