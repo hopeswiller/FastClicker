@@ -1,4 +1,4 @@
-import os
+import os,requests,time,math
 from tkinter import *
 from tkinter import ttk,filedialog, messagebox
 from src import autoclick, load_data
@@ -6,16 +6,16 @@ from src import autoclick, load_data
 
 root = Tk()
 root.title("AutoClicker")
+root.iconbitmap('./icon.ico')
 
 width = 480
-height = 370
+height = 380
 root.minsize(width, height)
 root.maxsize(width, height)
 x_Left = int(root.winfo_screenwidth() / 2 - width / 1.5)
 y_Top = int(root.winfo_screenheight() / 2 - height / 1.5)
 root.geometry(f"{width}x{height}+{x_Left}+{y_Top}")  # "widthxheight+Left+Top"
 root.resizable(0,0)
-
 
 # ------------------------------------------------------------------------------
 # Processes
@@ -56,7 +56,7 @@ def remove_loaded_data():
     status.config(text = "> Removed Loaded Data...")
 
 def display():
-    remove_loaded_data()
+    tree.delete(*tree.get_children())
     tree["column"] = list(headers.keys())
     tree["show"] = "headings"
 
@@ -87,6 +87,7 @@ def stop_click():
     if click_thread.running:
         click_thread.stop_click()
         print("Stopped Clicking...")
+        templateBtn.config(state=ACTIVE,bg="maroon",fg="white")
         status.config(text = "> Clicking Stopped...")
 
 
@@ -99,14 +100,43 @@ def start_click():
             click_thread.start_click()
             click_thread.app_counter = 0
             click_thread.time_between_repeats = int(repeatsTimeEntry.get().strip())
+            templateBtn.config(state=DISABLED,bg="#cccccc",fg="#666666")
             status.config(text = "> Clicking Started...")
     else:
         # info, warning,error,askquestion,askokcancel,askyesno
         messagebox.showwarning("Warning Message !!", "Please Load Clicking Data")
 
 
+
 def download():
-    os.chdir(path)
+    # change dir to downloads
+    os.chdir(os.path.join(os.environ['USERPROFILE'],'Downloads'))
+
+    # check if file already exists
+    if (os.path.exists("SampleTemplate.xlsx") == False):
+        status.config(text="> Downloading Template File...")
+        progressValue.grid(row=0,column=0)
+        progressBar.grid(row=0,column=1)
+
+        res = requests.get(
+            "https://drive.google.com/uc?export=download&id=17jenL8-Do108aVZBKETNDMXpLGJE6N_I",
+            stream = True
+        )
+        total_size = int(res.headers['content-length'])
+        with open("SampleTemplate.xlsx", 'wb') as f:
+            for data in res:
+                f.write(data)
+                progressBar['value'] += (100/70)  # progress is 100 divided by the length / how long is your loop
+                progressValue.config(text=f"{round(progressBar['value'])}%")
+                root.update_idletasks()
+                time.sleep(0.15)
+
+            # for data in tqdm(iterable=res.iter_content(chunk_size = 1024), total=total_size/1024, unit="KB"):
+            #     f.write(data)
+        status.config(text="> Download Completed...")
+        messagebox.showinfo("Download Completed","Your File Successfully Downloaded to Downloads Folder")
+    else:
+        messagebox.showerror("Error","File Already Exist in Downloading Path!")
 
 
 def save_data():
@@ -114,8 +144,11 @@ def save_data():
 
 
 def on_closing():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        click_thread.exit()
+    if click_thread.is_alive():
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            click_thread.exit()
+            root.destroy()
+    else:
         root.destroy()
 
 # -------------------------------------------------------------------------------
@@ -153,7 +186,7 @@ path.grid(row=0,column=2,padx=5)
 loadBtn = Button(cursorFrame, bg="green",fg="white",text="Load Profile",command=openfile)
 loadBtn.grid(row=0,column=3,padx=5)
 
-reloadBtn = Button(cursorFrame, text="Reload",command=reloadprofile,state=DISABLED)
+reloadBtn = Button(cursorFrame, text="Reload", command=reloadprofile,state=DISABLED)
 reloadBtn.grid(row=0,column=4,padx=5)
 
 
@@ -163,10 +196,6 @@ reloadBtn.grid(row=0,column=4,padx=5)
 # Data 
 dataFrame = LabelFrame(root, text="Profile", padx=2, pady=5)
 dataFrame.pack(padx=10,pady=2)
-
-# Create an instance of Style widget
-style=ttk.Style()
-style.theme_use('clam')
 
 # Create vertical scrollbar
 vscroll = Scrollbar(dataFrame,orient ="vertical")
@@ -209,13 +238,14 @@ templateBtn.grid(row=1,column=2,padx=5,pady=5,columnspan=2)
 
 # -------------------------------------------------------------------------------
 # Status Bar
+
 status = Label(root, text="> Developed by Hopeswiller",border=1, relief=SUNKEN,anchor=W,padx=5)
 status.pack(side=BOTTOM, fill=X)
 
-
-
-while True and click_thread.running:
-    status.config(text=click_thread.status_msg)
+frame = Frame(root)
+frame.pack(side=BOTTOM,pady=7,padx=8)
+progressValue = Label(frame,text="0%")
+progressBar = ttk.Progressbar(frame,orient=HORIZONTAL,length=width-50, mode="determinate")
 
 
 # root.bell()
