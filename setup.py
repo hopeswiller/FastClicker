@@ -1,32 +1,26 @@
-import os, sys
+import sysconfig, sys
 import uuid
 from cx_Freeze import setup, Executable
 
-# base="Win32GUI" should be used only for Windows GUI app
-base = None
-if sys.platform == "win32":
-    base = "Win32GUI"
 
 version = "1.0.0"
-# Generate a UUID (GUID) for the Upgrade Code
-UPGRAGE_CODE = str(uuid.uuid3(uuid.NAMESPACE_DNS, 'autoclicker.hopeswiller.org')).upper()
+app_name = "AutoClicker"
 
-initial_target_dir = os.path.join("ProgramFilesFolder",'AutoClicker',version)
+# Generate a UUID (GUID) for the Upgrade Code
+code = str(uuid.uuid3(uuid.NAMESPACE_DNS, f'{version.lower()}.hopeswiller.org')).upper()
+UPGRAGE_CODE = "{%s}" % (code)
+
+#For 64-bit Windows, ProgramFiles(64)Folder
+programfiles_dir = 'ProgramFiles64Folder' if sysconfig.get_platform() == 'win-amd64' else 'ProgramFilesFolder'
+initial_target_dir = '[%s]\%s\%s' % (programfiles_dir, app_name, version)
+
 bdist_msi_options = {
-    "add_to_path": True,
+    "add_to_path": False,
     "install_icon": "icon.ico",
-    "target_name": f"AutoClicker.{version}",
+    "target_name": app_name,
     "summary_data": {"author": "hopeswiller"},
     'initial_target_dir': initial_target_dir,
-    "upgrade_code": "{%s}".format(UPGRAGE_CODE),
-    "data": {
-        # "Directory": [
-        #     ("ProgramMenuFolder", "TARGETDIR", "."),
-        # #     # ("MyProgramMenu", "ProgramMenuFolder", "MYPROG~1|My Program"),
-        # ],
-        "ProgId": [("Prog.Id", None, None, "This is a description", "IconId", None)],
-        "Icon": [("IconId", "icon.ico")],
-    },
+    "upgrade_code": UPGRAGE_CODE
 }
 
 # Dependencies are automatically detected, but it might need fine tuning.
@@ -38,24 +32,30 @@ build_exe_options = {
 }
 
 
+# base="Win32GUI" should be used only for Windows GUI app
+base = None
+if sys.platform == "win32":
+    base = "Win32GUI"
+
 setup(
-    name="AutoClicker",
+    name=app_name,
     version=version,
     author="hopeswiller",
     author_email="davidba941@gmail.com",
     description="AutoClicker By Hopeswiller<davidba941@gmail.com>",
     options={
         "build_exe": build_exe_options,
-        # "bdist_msi": bdist_msi_options,
+        "bdist_msi": bdist_msi_options,
     },
     executables=[
         Executable(
             script="app.py",
-            target_name=f"AutoClicker.{version}",
+            target_name=app_name,
             copyright="Copyright (C) 2022 AutoClicker",
             base=base,
             icon="icon.ico",
-            shortcut_name=f"AutoClicker.{version}",
+            uac_admin=True,
+            shortcut_name=app_name,
             shortcut_dir="DesktopFolder",
         ),
     ],
