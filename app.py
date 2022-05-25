@@ -9,7 +9,7 @@ root.title("AutoClicker")
 root.iconbitmap('./icon.ico')
 
 width = 480
-height = 380
+height = 400
 root.minsize(width, height)
 root.maxsize(width, height)
 x_Left = int(root.winfo_screenwidth() / 2 - width / 1.5)
@@ -209,7 +209,7 @@ vscroll.config(command=tree.yview)
 # --------------------------------------------------------------------
 # Clicking Options
 clickFrame = LabelFrame(root, text="Clicking Options", padx=4, pady=5)
-clickFrame.pack(padx=15,pady=3)
+clickFrame.pack(padx=15,pady=2)
 
 repeatsLabel = Label(clickFrame, text="Number of Repeats")
 repeatsLabel.grid(row=0,column=0,padx=3)
