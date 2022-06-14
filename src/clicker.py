@@ -1,8 +1,29 @@
-import sys
+import sys,os
 # import load_data, autoclick, utils
 # import utils
-from pynput.keyboard import Listener, Key
+# from pynput.keyboard import Listener, Key
 
+print(os.environ['PROGRAMFILES'])
+# v = os.path.join(os.environ, encodekey, decodekey, encodevalue, decodevalue) 'Program Files (x86)')
+
+# print(v)
+# import time
+
+
+# def sleep(seconds):
+#     for i in range(seconds):
+#         print(i)
+#         if i == 3:
+#             raise KeyboardInterrupt("asd")
+#             print("Oh! You have sent a Keyboard Interrupt to me.\nBye, Bye")
+#         try:
+#             time.sleep(1)
+#         except KeyboardInterrupt:
+#             print("Oh! You have sent a Keyboard Interrupt to me.\nBye, Bye")
+#             break
+
+
+# sleep(60)
 # utils.init_figlet()
 # log = utils.init_logging()
 

@@ -30,15 +30,20 @@ openpyxl = "*"
 
 List of features ready and TODOs for future development
 
+- [x] An executable to run application
 - [x] Load Cursor Positions from a file (.xlsx)
 - [x] Start Clicling the cursor positions 
 - [x] Stop Clicling the cursor positions 
-- [x] Download a sample template to load cursor positions
+- [x] Sample template available in installation folder to load cursor positions
+- [x] Save data loaded to the application to a file
 
 TODOs:
 
-- [ ] Save file
+- [ ] Pick Mouse Locations
 
+REMOVED:
+
+- [x] Download a sample template to load cursor positions
 
 ## Status
 
