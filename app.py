@@ -6,7 +6,7 @@ from src import autoclick, load_data
 
 root = Tk()
 root.title("FastClicker")
-root.iconbitmap("./assets/icon.ico")
+root.iconbitmap("icon.ico")
 
 width = 480
 height = 410
@@ -260,7 +260,7 @@ stopClickBtn.grid(row=0,column=3,padx=5)
 # -------------------------------------------------------------------------------
 # Status Bar
 
-status = Label(root, text="> Developed by Hopeswiller",border=1, relief=SUNKEN,anchor=W,padx=5)
+status = Label(root, text="> Developed by hopeswiller<davidba941@gmail.com>",border=1, relief=SUNKEN,anchor=W,padx=5)
 status.pack(side=BOTTOM, fill=X)
 
 frame = Frame(root)

@@ -3,7 +3,11 @@ import sys,os
 # import utils
 # from pynput.keyboard import Listener, Key
 
-print(os.environ['PROGRAMFILES'])
+# print(os.environ['PROGRAMFILES'])
+# for k,v in os.environ.items():
+#     print(k, '-',v)
+# print(os.path.expanduser('~'))
+# print(os.sep.join([os.path.expanduser('~'), 'Application Data', 'MyApp']))
 # v = os.path.join(os.environ, encodekey, decodekey, encodevalue, decodevalue) 'Program Files (x86)')
 
 # print(v)
