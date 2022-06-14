@@ -11,8 +11,11 @@ code = str(uuid.uuid3(uuid.NAMESPACE_DNS, f'{version.lower()}.hopeswiller.org'))
 UPGRAGE_CODE = "{%s}" % (code)
 
 #For 64-bit Windows, ProgramFiles(64)Folder
-programfiles_dir = os.environ['PROGRAMFILES(X86)'] if sysconfig.get_platform() == 'win-amd64' else os.environ['PROGRAMFILES']
-initial_target_dir = os.path.join(programfiles_dir, app_name, version)
+# programfiles_dir = os.environ['PROGRAMFILES(X86)'] if sysconfig.get_platform() == 'win-amd64' else os.environ['PROGRAMFILES']
+# initial_target_dir = os.path.join(programfiles_dir, app_name, version)
+
+programfiles_dir = 'ProgramFiles64Folder' if sysconfig.get_platform() == 'win-amd64' else 'ProgramFilesFolder'
+initial_target_dir = '[%s]\%s\%s' % (programfiles_dir, app_name, f'v{version}')
 
 bdist_msi_options = {
     "add_to_path": False,
@@ -56,6 +59,8 @@ setup(
             icon="./assets/icon.ico",
             uac_admin=True,
             shortcut_name=app_name,
+            # shortcut_dir="ProgramMenuFolder",
+            # shortcut_dir=StartupFolder,
             shortcut_dir="DesktopFolder",
         ),
     ],
