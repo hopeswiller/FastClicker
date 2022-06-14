@@ -3,8 +3,8 @@ import uuid
 from cx_Freeze import setup, Executable
 
 
-version = "1.0.0"
-app_name = "AutoClicker"
+version = "1.0.1"
+app_name = "FastClicker"
 
 # Generate a UUID (GUID) for the Upgrade Code
 code = str(uuid.uuid3(uuid.NAMESPACE_DNS, f'{version.lower()}.hopeswiller.org')).upper()
@@ -42,7 +42,7 @@ setup(
     version=version,
     author="hopeswiller",
     author_email="davidba941@gmail.com",
-    description="AutoClicker By Hopeswiller<davidba941@gmail.com>",
+    description=f"{app_name} By Hopeswiller<davidba941@gmail.com>",
     options={
         "build_exe": build_exe_options,
         "bdist_msi": bdist_msi_options,
@@ -51,7 +51,7 @@ setup(
         Executable(
             script="app.py",
             target_name=app_name,
-            copyright="Copyright (C) 2022 AutoClicker",
+            copyright=f"Copyright (C) 2022 {app_name}",
             base=base,
             icon="icon.ico",
             uac_admin=True,

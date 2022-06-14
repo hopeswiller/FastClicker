@@ -56,9 +56,11 @@ class AutoClicker(threading.Thread):
                     status_msg = f'Running Repeat {self.app_counter+1}...' if self.running else ''
 
                     counter = 0
+                    print(self.profile)
                     while self.running and counter < len(self.profile):
                         for item in self.profile:
                             print(f"Click Activity : {item['Activity']}")
+                            print(f"Move moved to : {item['X']} and {item['Y']}")
                             self.move_mouse(item["X"], item["Y"])
 
                             self.button = self.switch_btn(item["Button"])
