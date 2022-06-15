@@ -41,22 +41,25 @@ def get_menu_bar(root):
 
 def get_cursor_options_items(root):
     cursorFrame = LabelFrame(root, text="Cursor Options", padx=5, pady=5)
-    pathLabel = Label(cursorFrame, text="File Path")
+    cursorFrame.pack(padx=18, pady=5)
+    pathLabel = Label(cursorFrame, text="File")
     path = Entry(cursorFrame, width=37)
-    loadBtn = Button(cursorFrame, bg="green", fg="white", text="Load Profile")
+    loadBtn = Button(cursorFrame, bg="green", fg="white", text="Load File")
     reloadBtn = Button(cursorFrame, text="Reload")
-
-    cursorFrame.pack(padx=20, pady=5)
+    pickBtn = Button(cursorFrame, text="Pick Pos")
+    
     pathLabel.grid(row=0, column=1)
-    path.grid(row=0, column=2, padx=5)
-    loadBtn.grid(row=0, column=3, padx=5)
-    reloadBtn.grid(row=0, column=4, padx=5)
+    path.grid(row=0, column=2, padx=4)
+    loadBtn.grid(row=0, column=3, padx=2)
+    reloadBtn.grid(row=0, column=4,padx=2)
+    pickBtn.grid(row=0, column=5,padx=1)
 
     return (
         cursorFrame,
         path,
         loadBtn,
         reloadBtn,
+        pickBtn
     )
 
 

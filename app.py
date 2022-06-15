@@ -1,6 +1,7 @@
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox
+from pynput.mouse import Controller, Listener
 from src import autoclick, load_data, widgets
 
 
@@ -69,6 +70,7 @@ def display(headers, profile):
 
 
 def reloadprofile():
+    pickProfile = []
     if len(path.get().strip()) > 0:
         tree.pack_forget()
         vscroll.pack_forget()
@@ -139,7 +141,7 @@ def on_move(x, y):
     status.config(text=f"> Mouse Moved to position {(x,y)}")
     root.update_idletasks()
 
-
+global pickProfile
 pickProfile = []
 def on_click(x, y, button, pressed):
     print(f"Mouse {'Pressed' if pressed else 'Released'} at {(x,y)}")
@@ -151,11 +153,11 @@ def on_click(x, y, button, pressed):
     # raise StopException or return False from a callback to stop the listener.
     if not pressed:
         if location:
-            tree["column"] = ("Activity", "X", "Y", "Button", "delay(ms)", "delay(s)")
+            tree["column"] = ("Activity", "X", "Y", "Button", "delay(s)")
             tree["show"] = "headings"
 
             for col in tree["column"]:
-                tree.column(col, anchor=CENTER, stretch=NO, width=70)
+                tree.column(col, anchor=CENTER, stretch=NO, width=83)
                 tree.heading(col, text=col)
 
             # # rows
@@ -167,7 +169,6 @@ def on_click(x, y, button, pressed):
                     location["x"],
                     location["y"],
                     location["btn"],
-                    "6000",
                     "6",
                 ),
             )
@@ -177,7 +178,6 @@ def on_click(x, y, button, pressed):
                     "X": location["x"],
                     "Y": location["y"],
                     "Button": location["btn"],
-                    "delay(ms)": 6000,
                     "delay(s)": 6,
                 }
             )
@@ -265,9 +265,11 @@ edit.add_command(label="Remove Data", command=remove_loaded_data)
     path,
     loadBtn,
     reloadBtn,
+    pickBtn,
 ) = widgets.get_cursor_options_items(root)
 loadBtn.config(command=openfile)
 reloadBtn.config(command=reloadprofile)
+pickBtn.config(command=pickLocation)
 
 
 # --------------------------------------------------------------------
