@@ -1,23 +1,22 @@
-import sysconfig, sys
+import sysconfig, sys, os
 import uuid
 from cx_Freeze import setup, Executable
 
-
-version = "1.0.1"
+version = "1.0.2"
 app_name = "FastClicker"
+release_name = f'{app_name}.v{version.split(".")[0]}'
 
 # Generate a UUID (GUID) for the Upgrade Code
 code = str(uuid.uuid3(uuid.NAMESPACE_DNS, f'{version.lower()}.hopeswiller.org')).upper()
 UPGRAGE_CODE = "{%s}" % (code)
 
-#For 64-bit Windows, ProgramFiles(64)Folder
 programfiles_dir = 'ProgramFiles64Folder' if sysconfig.get_platform() == 'win-amd64' else 'ProgramFilesFolder'
-initial_target_dir = '[%s]\%s\%s' % (programfiles_dir, app_name, version)
+initial_target_dir = '[%s]\%s\%s' % (programfiles_dir, app_name, f'v{version.split(".")[0]}')
 
 bdist_msi_options = {
     "add_to_path": False,
-    "install_icon": "icon.ico",
-    "target_name": app_name,
+    "install_icon": "./assets/icon.ico",
+    "target_name": release_name,
     "summary_data": {"author": "hopeswiller"},
     'initial_target_dir': initial_target_dir,
     "upgrade_code": UPGRAGE_CODE
@@ -27,7 +26,7 @@ bdist_msi_options = {
 build_exe_options = {
     "packages": ["src"],
     "includes": ["pynput.keyboard._win32", "pynput.mouse._win32"],
-    "include_files": ["icon.ico"],
+    "include_files": ["./assets/icon.ico", "./assets/template.xlsx"],
     "include_msvcr": True
 }
 
@@ -50,12 +49,14 @@ setup(
     executables=[
         Executable(
             script="app.py",
-            target_name=app_name,
+            target_name=release_name,
             copyright=f"Copyright (C) 2022 {app_name}",
             base=base,
-            icon="icon.ico",
+            icon="./assets/icon.ico",
             uac_admin=True,
             shortcut_name=app_name,
+            # shortcut_dir="ProgramMenuFolder",
+            # shortcut_dir=StartupFolder,
             shortcut_dir="DesktopFolder",
         ),
     ],

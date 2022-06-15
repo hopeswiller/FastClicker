@@ -1,0 +1,13 @@
+-i https://pypi.org/simple
+cx-freeze==6.11.0
+cx-logging==3.0
+et-xmlfile==1.1.0
+importlib-metadata==4.11.4
+lief==0.12.1
+openpyxl==3.0.10
+packaging==21.3
+pynput==1.7.6
+pyparsing==3.0.9
+setuptools==60.10.0
+six==1.16.0
+zipp==3.8.0

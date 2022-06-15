@@ -18,7 +18,7 @@ class AutoClicker(threading.Thread):
     app_running = True
     app_counter = 0
     time_between_repeats = 0
-    status_msg = ''
+    status_msg = ""
 
     def __init__(self, profile=[], repetitions=5):
         super(AutoClicker, self).__init__()
@@ -53,7 +53,11 @@ class AutoClicker(threading.Thread):
             if self.app_counter < int(self.repetitions):
                 if self.running:
                     print(f"Running Repeat {self.app_counter+1}...")
-                    status_msg = f'Running Repeat {self.app_counter+1}...' if self.running else ''
+                    status_msg = (
+                        f"Running Repeat {self.app_counter+1}..."
+                        if self.running
+                        else ""
+                    )
 
                     counter = 0
                     print(self.profile)
@@ -66,12 +70,15 @@ class AutoClicker(threading.Thread):
                             self.button = self.switch_btn(item["Button"])
                             mouse.click(self.button)
 
-                            print(f'Delaying for {item["delay(s)"]} seconds for next activity\n')
+                            print(
+                                f'Delaying for {item["delay(s)"]} seconds for next activity\n'
+                            )
                             time.sleep(item["delay(s)"])
 
                             counter += 1
 
-                    print(f'>> Delaying for {self.time_between_repeats} seconds for next repeat <<\n')
+                    print(
+                        f">> Delaying for {self.time_between_repeats} seconds for next repeat <<\n"
+                    )
                     time.sleep(self.time_between_repeats)  # time between every repeat
                     self.app_counter += 1
-

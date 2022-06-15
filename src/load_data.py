@@ -1,4 +1,4 @@
-import os,sys
+import os, sys
 import openpyxl as xl
 
 
@@ -33,7 +33,7 @@ def get_click_profile(path):
     for col in sheet.iter_cols(max_col=sheet.max_column):
         headers[str(col[0].value).strip()] = None
 
-    for row in sheet.iter_rows(min_row=2,values_only=True):
+    for row in sheet.iter_rows(min_row=2, values_only=True):
         data = {}
         if all(row):
             for index, col in enumerate(row):
