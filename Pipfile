@@ -6,9 +6,7 @@ name = "pypi"
 [packages]
 cx-freeze = "*"
 pynput = "*"
-pyfiglet = "*"
 openpyxl = "*"
-requests = "*"
 
 [dev-packages]
 

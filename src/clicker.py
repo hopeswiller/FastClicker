@@ -1,4 +1,4 @@
-import sys,os
+import sys,os, threading,time
 # import load_data, autoclick, utils
 # import utils
 # from pynput.keyboard import Listener, Key
@@ -12,6 +12,34 @@ import sys,os
 
 # print(v)
 # import time
+
+# class Test(threading.Thread):
+
+#     stop = threading.Event() 
+#     def run(self):
+#         for i in range(1,11):
+#             print(f'{i} of 20 thread is running')
+#             time.sleep(0.3)
+
+#             if self.stop.is_set():
+#                 print("stopping thread..")
+#                 break
+
+#         print('finished..')
+
+# test = Test()
+# test.start()
+# time.sleep(3)
+# test.stop.set()
+# test.join()
+# time.sleep(2)
+# # new 
+# test1 = Test()
+# # test1.stop.isSet = False
+# print(test1.stop.is_set())
+# test1.start()
+
+
 
 
 # def sleep(seconds):
