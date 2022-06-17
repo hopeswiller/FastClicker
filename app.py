@@ -8,7 +8,7 @@ root = Tk()
 root.title("FastClicker")
 root.iconbitmap("icon.ico")
 
-width = 480
+width = 482
 height = 410
 root.minsize(width, height)
 root.maxsize(width, height)
@@ -34,8 +34,6 @@ def openfile():
         try:
             path.delete(0, END)
             path.insert(0, filename)
-            global profile
-            global headers
             profile,headers = load_data.get_click_profile(filename)
             click_thread.profile = profile
             click_thread.repetitions = int(repeatsEntry.get().strip())

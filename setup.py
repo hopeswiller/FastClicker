@@ -2,17 +2,12 @@ import sysconfig, sys, os
 import uuid
 from cx_Freeze import setup, Executable
 
-
-version = "1.0.1"
+version = "1.0.4"
 app_name = "FastClicker"
 
 # Generate a UUID (GUID) for the Upgrade Code
 code = str(uuid.uuid3(uuid.NAMESPACE_DNS, f'{version.lower()}.hopeswiller.org')).upper()
 UPGRAGE_CODE = "{%s}" % (code)
-
-#For 64-bit Windows, ProgramFiles(64)Folder
-# programfiles_dir = os.environ['PROGRAMFILES(X86)'] if sysconfig.get_platform() == 'win-amd64' else os.environ['PROGRAMFILES']
-# initial_target_dir = os.path.join(programfiles_dir, app_name, version)
 
 programfiles_dir = 'ProgramFiles64Folder' if sysconfig.get_platform() == 'win-amd64' else 'ProgramFilesFolder'
 initial_target_dir = '[%s]\%s\%s' % (programfiles_dir, app_name, f'v{version}')
@@ -59,9 +54,8 @@ setup(
             icon="./assets/icon.ico",
             uac_admin=True,
             shortcut_name=app_name,
-            # shortcut_dir="ProgramMenuFolder",
-            # shortcut_dir=StartupFolder,
-            shortcut_dir="DesktopFolder",
+            shortcut_dir="ProgramMenuFolder"
+            # shortcut_dir=StartupFolder
         ),
     ],
 )
