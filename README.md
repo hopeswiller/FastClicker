@@ -25,23 +25,28 @@ Openpyxl = "3.0.10"
 ## Setup
 
 + Run ```pipenv install```
-+ Run ```./start.sh```
++ Run ```cd cmd && ./start.sh```
 
 ## Features
 
 List of features ready and TODOs for future development
 
 - [x] An executable to run application
+- [x] Application made to alsways stay active on every window
 - [x] Load Cursor Positions from a file (.xlsx)
 - [x] Start clicking the cursor positions 
 - [x] Stop clicking the cursor positions 
 - [x] Sample template available in installation folder to load cursor positions
 - [x] Save data loaded to the application to a file
-- [x] Update already loaded data (mouse positions)
+- [x] Edit already loaded data (mouse positions)
+- [x] Pick Mouse Locations
+- [x] Application is DPI aware
+- [x] Use of mutliple threads for processing
 
 TODOs:
 
-- [ ] Pick Mouse Locations
+- [ ] Refactor code
+- [ ] Fix minor issues/bugs
 
 REMOVED:
 
