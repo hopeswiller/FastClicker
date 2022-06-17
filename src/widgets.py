@@ -85,6 +85,7 @@ def get_profile_frame_items(root):
 
     delay_entry = Entry(selectionFrame, width=5)
     delay_entry.grid(row=0, column=7, padx=1)
+    delay_entry.insert(-1, 6)
 
     btn_check = Checkbutton(
         selectionFrame,

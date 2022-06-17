@@ -1,4 +1,4 @@
-import sys, os, threading, time
+import time
 
 # import load_data, autoclick, utils
 # import utils

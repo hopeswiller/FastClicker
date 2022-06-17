@@ -57,7 +57,7 @@ class AutoClicker(threading.Thread):
             print("Program Running...")
             if self.running:
                 if self.app_counter < int(self.repetitions):
-                    self.status_msg.config(text=f"> Running Repeat {self.app_counter+1}...")
+                    self.status_msg.config(text=f"> Program Running Repeat {self.app_counter+1}...")
 
                     counter = 0
                     while self.running and counter < len(self.profile):

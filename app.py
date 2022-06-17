@@ -4,24 +4,27 @@ from tkinter import filedialog, messagebox
 from pynput import mouse, keyboard
 from src import make_dpi, autoclick, load_data, widgets
 
-
 root = Tk()
 widgets.set_window(root, width=612, height=510, resizable=False)
 
 # -------------------------------------------------------------------------------
 # Globals
-mouselistener = None
-keylistener = None
 global click_thread
 click_thread = autoclick.AutoClicker()
+global profile
+profile = []
+mouselistener = None
+keylistener = None
 is_clear = False
 exit_event = autoclick.exit_event
+
 # ------------------------------------------------------------------------------
 # Methods
 def pass_data(file):
     try:
         path.delete(0, END)
         path.insert(0, file)
+        global profile
         profile, headers = load_data.get_click_profile(file)
         click_thread.profile = profile
     except:
@@ -50,8 +53,8 @@ def display(headers, profile):
         tree.column(col, anchor=CENTER, stretch=NO, width=107)
         tree.heading(col, text=col)
     # rows
-    for row in profile:
-        tree.insert("", "end", values=list(row.values()))
+    for i, row in enumerate(profile):
+        tree.insert("", "end", iid=i, values=list(row.values()))
 
     vscroll.pack(side=RIGHT, fill=Y)
     tree.pack()
@@ -95,7 +98,9 @@ def start_click():
 
         if not click_thread.running:
             print("Started Clicking...")
+            status.config(text="> Start Click Initiated...")
             exit_event.clear()
+            click_thread.status_msg = status
             click_thread.start_click()
             click_thread.app_counter = 0
             click_thread.time_between_repeats = int(repeatsTimeEntry.get().strip())
@@ -103,7 +108,6 @@ def start_click():
             
             status.config(text="> Start Click Initiated...")
             startClickBtn.config(state=DISABLED, bg="#cccccc", fg="#666666")
-            click_thread.status_msg = status
     else:
         # info, warning,error,askquestion,askokcancel,askyesno
         messagebox.showwarning("Warning Message!!", "Please Load Clicking Data")
@@ -128,7 +132,7 @@ def pickLocation():
     root.withdraw() # hide window
     global mouselistener
     global keylistener
-    mouselistener = mouse.Listener(on_move=on_move, on_click=on_click)
+    mouselistener = mouse.Listener(on_click=on_click)
     keylistener = keyboard.Listener(on_press=on_press)
     mouselistener.start()
     keylistener.start()
@@ -136,20 +140,14 @@ def pickLocation():
 def on_press(key):
     if key == keyboard.Key.esc:
         root.deiconify() # show window
-        # stop listeners
         keylistener.stop()
         mouselistener.stop()
         status.config(text=f"> Mouse Listener Cancelled")
 
-def on_move(x, y):
-    root.update_idletasks()
-    status.config(text=f"> Mouse Moved to position {(x,y)}")
-    root.update_idletasks()
-
-pickProfile = []
 def on_click(x, y, button, pressed):
     root.deiconify() # show window
     global is_clear
+    global profile
     location = {"x": x, "y": y, "btn": "L" if button.left else "R"}
     status.config(text=f"> Mouse Clicked at {(x,y)}")
     headers = {'Activity': None, 'X': None, 'Y': None, 'Button': None, 'delay(s)': None}
@@ -157,24 +155,24 @@ def on_click(x, y, button, pressed):
     # raise StopException or return False from a callback to stop the listener.
     if not pressed:
         if is_clear:
-            pickProfile.clear()
+            profile.clear()
 
         if location:
-            pickProfile.append(
+            profile.append(
                 {
-                    "Activity": f"activity{len(pickProfile)+1}",
+                    "Activity": f"activity{len(profile)+1}",
                     "X": location["x"],
                     "Y": location["y"],
                     "Button": location["btn"],
                     "delay(s)": 5,
                 }
             )
-            display(headers,pickProfile)
+            display(headers,profile)
             vscroll.pack(side=RIGHT, fill=Y)
             tree.pack()
             is_clear = False   # change value of global variable
 
-        click_thread.profile = pickProfile
+        click_thread.profile = profile
         keylistener.stop()
         mouselistener.stop()
         root.deiconify()
@@ -220,7 +218,7 @@ def select_record():
 
 
 def update_record():
-    if tree.get_children():
+    if tree.get_children() and x_entry.get() and y_entry.get():
         # grab selected record and update
         selected = tree.focus()
         values = tree.item(
@@ -234,6 +232,13 @@ def update_record():
                 delay_entry.get(),
             ),
         )
+        global profile
+        profile[int(selected)] = {
+            'Activity': activity_entry.get(), 
+            'X': int(x_entry.get()), 'Y': int(y_entry.get()), 
+            'Button': checkValue.get(),
+            'delay(s)': int(delay_entry.get()),
+        }
         activity_entry.delete(0, END)
         x_entry.delete(0, END)
         y_entry.delete(0, END)
@@ -303,6 +308,4 @@ fast_load()
 root.bell()
 root.protocol("WM_DELETE_WINDOW", lambda: on_closing(click_thread))
 root.attributes('-topmost',True)
-
-a = threading.Thread(target=pickLocation)
 root.mainloop()
