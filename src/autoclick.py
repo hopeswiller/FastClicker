@@ -53,8 +53,8 @@ class AutoClicker(threading.Thread):
             if self.app_counter < int(self.repetitions):
                 if self.running:
                     print(f"Running Repeat {self.app_counter+1}...")
-                    status_msg = (
-                        f"Running Repeat {self.app_counter+1}..."
+                    self.status_msg = (
+                        f"> Running Repeat {self.app_counter+1}..."
                         if self.running
                         else ""
                     )
@@ -65,20 +65,16 @@ class AutoClicker(threading.Thread):
                         for item in self.profile:
                             print(f"Click Activity : {item['Activity']}")
                             print(f"Move moved to : {item['X']} and {item['Y']}")
+                            
                             self.move_mouse(item["X"], item["Y"])
-
                             self.button = self.switch_btn(item["Button"])
                             mouse.click(self.button)
 
-                            print(
-                                f'Delaying for {item["delay(s)"]} seconds for next activity\n'
-                            )
+                            print(f'Delaying for {item["delay(s)"]} seconds for next activity\n')
                             time.sleep(item["delay(s)"])
 
                             counter += 1
 
-                    print(
-                        f">> Delaying for {self.time_between_repeats} seconds for next repeat <<\n"
-                    )
+                    print(f">> Delaying for {self.time_between_repeats} seconds for next repeat <<\n")
                     time.sleep(self.time_between_repeats)  # time between every repeat
                     self.app_counter += 1

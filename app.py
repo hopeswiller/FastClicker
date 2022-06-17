@@ -46,11 +46,6 @@ def openfile():
         status.config(text="> Click Thread Started...")
 
 
-def remove_loaded_data():
-    tree.delete(*tree.get_children())
-    status.config(text="> Removed Loaded Data...")
-
-
 def display(headers, profile):
     tree.delete(*tree.get_children())
     tree["column"] = list(headers.keys())
@@ -116,6 +111,8 @@ def start_click():
             click_thread.repetitions = int(repeatsEntry.get().strip())
             status.config(text="> Start Click Initiated...")
             startClickBtn.config(state=DISABLED, bg="#cccccc", fg="#666666")
+
+            # status.config(text=click_thread.status_msg)
     else:
         # info, warning,error,askquestion,askokcancel,askyesno
         messagebox.showwarning("Warning Message!!", "Please Load Clicking Data")
@@ -136,72 +133,63 @@ def save_data():
         status.config(text="> Data Saved...")
 
 
+def pickLocation():
+    mouse = Controller()
+    # with Listener(on_click=on_click) as listener:
+    # listener.join()
+    root.withdraw() # hide window
+    listener = Listener(on_move=on_move, on_click=on_click)
+    listener.start()
+
 def on_move(x, y):
     root.update_idletasks()
     status.config(text=f"> Mouse Moved to position {(x,y)}")
     root.update_idletasks()
 
-global pickProfile
+# [
+#   {'Activity': 'refresh', 'X': 58, 'Y': 847, 'Button': 'L', 'delay(ms)': 6000, 'delay(s)': 6},
+#   {'Activity': 'order', 'X': 58, 'Y': 847, 'Button': 'L', 'delay(ms)': 6000, 'delay(s)': 6}
+# ]
+is_clear = False
+
 pickProfile = []
 def on_click(x, y, button, pressed):
-    print(f"Mouse {'Pressed' if pressed else 'Released'} at {(x,y)}")
-
+    root.deiconify() # show window
+    global is_clear
     location = {"x": x, "y": y, "btn": "L" if button.left else "R"}
     status.config(text=f"> Mouse Clicked at {(x,y)}")
+    headers = {'Activity': None, 'X': None, 'Y': None, 'Button': None, 'delay(s)': None}
 
     # call Listener.stop from anywhere,
     # raise StopException or return False from a callback to stop the listener.
     if not pressed:
+        if is_clear:
+            pickProfile.clear()
+
         if location:
-            tree["column"] = ("Activity", "X", "Y", "Button", "delay(s)")
-            tree["show"] = "headings"
-
-            for col in tree["column"]:
-                tree.column(col, anchor=CENTER, stretch=NO, width=83)
-                tree.heading(col, text=col)
-
-            # # rows
-            tree.insert(
-                "",
-                "end",
-                values=(
-                    "activity",
-                    location["x"],
-                    location["y"],
-                    location["btn"],
-                    "6",
-                ),
-            )
             pickProfile.append(
                 {
                     "Activity": "activity",
                     "X": location["x"],
                     "Y": location["y"],
                     "Button": location["btn"],
-                    "delay(s)": 6,
+                    "delay(s)": 5,
                 }
             )
-
+            display(headers,pickProfile)
             vscroll.pack(side=RIGHT, fill=Y)
             tree.pack()
+            is_clear = False   # change value of global variable
 
         click_thread.profile = pickProfile
         # Stop listener
         return False
 
-
-# [
-#   {'Activity': 'refresh', 'X': 58, 'Y': 847, 'Button': 'L', 'delay(ms)': 6000, 'delay(s)': 6},
-#   {'Activity': 'order', 'X': 58, 'Y': 847, 'Button': 'L', 'delay(ms)': 6000, 'delay(s)': 6}
-# ]
-
-
-def pickLocation():
-    mouse = Controller()
-    # with Listener(on_click=on_click) as listener:
-    # listener.join()
-    listener = Listener(on_move=on_move, on_click=on_click)
-    listener.start()
+def remove_loaded_data():
+    global is_clear
+    is_clear = True   # change value of global variable
+    tree.delete(*tree.get_children())
+    status.config(text="> Removed Loaded Data...")
 
 
 def on_closing():

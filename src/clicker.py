@@ -88,3 +88,26 @@ import sys,os, threading,time
 
 # with Listener(on_press=on_press) as listener:
 #     listener.join()
+import schedule
+
+def job():
+    print("starting job...")
+    while True:
+        if True:
+            print(f"Running....")
+            
+            counter = 0
+            while counter < 3:
+                for i in range(3):
+                    print(f"Running Row")
+                    time.sleep(3)
+                    counter += 1
+
+            # print(f">> Delaying for {self.time_between_repeats} seconds for next repeat <<\n")
+            # time.sleep(self.time_between_repeats)  # time between every repeat
+            # self.app_counter += 1
+
+schedule.every(10).seconds.do(job)
+
+while True:
+    schedule.run_pending()
