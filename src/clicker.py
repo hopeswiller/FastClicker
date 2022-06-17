@@ -1,4 +1,5 @@
-import sys,os, threading,time
+import sys, os, threading, time
+
 # import load_data, autoclick, utils
 # import utils
 # from pynput.keyboard import Listener, Key
@@ -15,7 +16,7 @@ import sys,os, threading,time
 
 # class Test(threading.Thread):
 
-#     stop = threading.Event() 
+#     stop = threading.Event()
 #     def run(self):
 #         for i in range(1,11):
 #             print(f'{i} of 20 thread is running')
@@ -33,13 +34,11 @@ import sys,os, threading,time
 # test.stop.set()
 # test.join()
 # time.sleep(2)
-# # new 
+# # new
 # test1 = Test()
 # # test1.stop.isSet = False
 # print(test1.stop.is_set())
 # test1.start()
-
-
 
 
 # def sleep(seconds):
@@ -65,49 +64,3 @@ import sys,os, threading,time
 # click_thread = autoclick.AutoClicker(profile)
 # log.debug(f"Click Thread Running...")
 # click_thread.start()
-
-
-
-
-# def on_press(key):
-#     # start_stop_key will stop clicking if running flag is set to true
-#     if key == Key.f4:
-#         if click_thread.running:
-#             log.info("Stop Clicking (F4)...")
-#             click_thread.stop_click()
-#         else:
-#             log.info("Start Clicking (F4)...")
-#             click_thread.start_click()
-
-#     # here exit method is called and when
-#     # key is pressed it terminates auto clicker
-#     elif key == Key.esc:
-#         click_thread.exit()
-#         listener.stop()
-#         sys.exit()
-
-# with Listener(on_press=on_press) as listener:
-#     listener.join()
-import schedule
-
-def job():
-    print("starting job...")
-    while True:
-        if True:
-            print(f"Running....")
-            
-            counter = 0
-            while counter < 3:
-                for i in range(3):
-                    print(f"Running Row")
-                    time.sleep(3)
-                    counter += 1
-
-            # print(f">> Delaying for {self.time_between_repeats} seconds for next repeat <<\n")
-            # time.sleep(self.time_between_repeats)  # time between every repeat
-            # self.app_counter += 1
-
-schedule.every(10).seconds.do(job)
-
-while True:
-    schedule.run_pending()

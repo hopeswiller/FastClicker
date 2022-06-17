@@ -6,6 +6,8 @@ import time
 from pynput.mouse import Button, Controller
 
 mouse = Controller()
+delay_event = threading.Event()
+exit_event = threading.Event()
 
 
 class AutoClicker(threading.Thread):
@@ -18,7 +20,7 @@ class AutoClicker(threading.Thread):
     app_running = True
     app_counter = 0
     time_between_repeats = 0
-    status_msg = ""
+    status_msg = None
 
     def __init__(self, profile=[], repetitions=5):
         super(AutoClicker, self).__init__()
@@ -32,10 +34,12 @@ class AutoClicker(threading.Thread):
 
     def stop_click(self):
         self.running = False
+        exit_event.set()
 
     def exit(self):
         self.stop_click()
         self.app_running = False
+        print("Application Exiting...")
 
     def move_mouse(self, x, y):
         mouse.position = (x, y)
@@ -50,31 +54,34 @@ class AutoClicker(threading.Thread):
     # When the thread starts, this method will be called
     def run(self):
         while self.app_running:
-            if self.app_counter < int(self.repetitions):
-                if self.running:
-                    print(f"Running Repeat {self.app_counter+1}...")
-                    self.status_msg = (
-                        f"> Running Repeat {self.app_counter+1}..."
-                        if self.running
-                        else ""
-                    )
+            print("Program Running...")
+            if self.running:
+                if self.app_counter < int(self.repetitions):
+                    self.status_msg.config(text=f"> Running Repeat {self.app_counter+1}...")
 
                     counter = 0
-                    print(self.profile)
                     while self.running and counter < len(self.profile):
                         for item in self.profile:
-                            print(f"Click Activity : {item['Activity']}")
-                            print(f"Move moved to : {item['X']} and {item['Y']}")
-                            
+                            if exit_event.is_set():
+                                break
+                            print(f"Click Activity: {item['Activity']}")
                             self.move_mouse(item["X"], item["Y"])
+                            
+                            # if not self.running:
+                            if exit_event.is_set():
+                                break
                             self.button = self.switch_btn(item["Button"])
                             mouse.click(self.button)
+                            print(f"Clicked at: {item['X']} and {item['Y']}")
 
-                            print(f'Delaying for {item["delay(s)"]} seconds for next activity\n')
-                            time.sleep(item["delay(s)"])
+                            if exit_event.is_set():
+                                break
+                            print(f'{item["delay(s)"]} secs delay for next activity\n')
+                            delay_event.wait(item["delay(s)"])
 
                             counter += 1
 
-                    print(f">> Delaying for {self.time_between_repeats} seconds for next repeat <<\n")
-                    time.sleep(self.time_between_repeats)  # time between every repeat
+                    print(f">> {self.time_between_repeats} secs delay for next repeat <<")
+                    delay_event.wait(self.time_between_repeats)  # time between every repeat
                     self.app_counter += 1
+                    print(f">> Next Repetition...<<")

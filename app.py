@@ -1,38 +1,33 @@
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox
-from pynput.mouse import Controller, Listener
-from src import autoclick, load_data, widgets
+from pynput import mouse, keyboard
+from src import make_dpi, autoclick, load_data, widgets
 
 
 root = Tk()
-widgets.set_window(root, width=480, height=410, resizable=True)
+widgets.set_window(root, width=612, height=510, resizable=False)
 
-
-# ------------------------------------------------------------------------------
-# Processes
+# -------------------------------------------------------------------------------
+# Globals
+mouselistener = None
+keylistener = None
+global click_thread
 click_thread = autoclick.AutoClicker()
-
+is_clear = False
+exit_event = autoclick.exit_event
 # ------------------------------------------------------------------------------
 # Methods
 def pass_data(file):
     try:
         path.delete(0, END)
         path.insert(0, file)
-        global profile
-        global headers
         profile, headers = load_data.get_click_profile(file)
         click_thread.profile = profile
-        click_thread.repetitions = int(repeatsEntry.get().strip())
-    except FileNotFoundError:
-        messagebox.showerror("Error Message !!", "File Couldn't Be Opened...Try Again!")
-    except ValueError:
+    except:
         messagebox.showerror("Error Message !!", "File Couldn't Be Opened...Try Again!")
     else:
         display(headers, profile)
-        if not click_thread.is_alive():
-            click_thread.start()
-
 
 
 def openfile():
@@ -43,7 +38,7 @@ def openfile():
     )
     if filename:
         pass_data(filename)
-        status.config(text="> Click Thread Started...")
+        status.config(text="> File Loaded Successfully...")
 
 
 def display(headers, profile):
@@ -52,9 +47,8 @@ def display(headers, profile):
     tree["show"] = "headings"
 
     for col in tree["column"]:
-        tree.column(col, anchor=CENTER, stretch=NO, width=83)
+        tree.column(col, anchor=CENTER, stretch=NO, width=107)
         tree.heading(col, text=col)
-
     # rows
     for row in profile:
         tree.insert("", "end", values=list(row.values()))
@@ -73,19 +67,16 @@ def reloadprofile():
         pass_data(path.get().strip())
         status.config(text="> Reloaded Clicking Data...")
     else:
-        messagebox.showwarning("Warning Message !!", "Load Data Before Reload")
+        messagebox.showwarning("Warning Message!!", "Load Data Before Reload")
 
 
 def fast_load():
-    loc = os.path.join(
-        os.environ["USERPROFILE"], "Documents", "FastClicker", "recentpaths.txt"
-    )
+    loc = os.path.join(os.environ["USERPROFILE"], "Documents", "FastClicker", "recentpaths.txt")
     if os.path.exists(loc):
         with open(loc, "r") as f:
             data = f.read()
-        # path.insert(0, data)
         pass_data(data.strip())
-        status.config(text="> Click Thread Started...")
+        status.config(text="> Saved Data Loaded Successfully...")
 
 
 def stop_click():
@@ -104,15 +95,15 @@ def start_click():
 
         if not click_thread.running:
             print("Started Clicking...")
-            click_thread.app_running = True
+            exit_event.clear()
             click_thread.start_click()
             click_thread.app_counter = 0
             click_thread.time_between_repeats = int(repeatsTimeEntry.get().strip())
             click_thread.repetitions = int(repeatsEntry.get().strip())
+            
             status.config(text="> Start Click Initiated...")
             startClickBtn.config(state=DISABLED, bg="#cccccc", fg="#666666")
-
-            # status.config(text=click_thread.status_msg)
+            click_thread.status_msg = status
     else:
         # info, warning,error,askquestion,askokcancel,askyesno
         messagebox.showwarning("Warning Message!!", "Please Load Clicking Data")
@@ -134,23 +125,26 @@ def save_data():
 
 
 def pickLocation():
-    mouse = Controller()
-    # with Listener(on_click=on_click) as listener:
-    # listener.join()
     root.withdraw() # hide window
-    listener = Listener(on_move=on_move, on_click=on_click)
-    listener.start()
+    global mouselistener
+    global keylistener
+    mouselistener = mouse.Listener(on_move=on_move, on_click=on_click)
+    keylistener = keyboard.Listener(on_press=on_press)
+    mouselistener.start()
+    keylistener.start()
+
+def on_press(key):
+    if key == keyboard.Key.esc:
+        root.deiconify() # show window
+        # stop listeners
+        keylistener.stop()
+        mouselistener.stop()
+        status.config(text=f"> Mouse Listener Cancelled")
 
 def on_move(x, y):
     root.update_idletasks()
     status.config(text=f"> Mouse Moved to position {(x,y)}")
     root.update_idletasks()
-
-# [
-#   {'Activity': 'refresh', 'X': 58, 'Y': 847, 'Button': 'L', 'delay(ms)': 6000, 'delay(s)': 6},
-#   {'Activity': 'order', 'X': 58, 'Y': 847, 'Button': 'L', 'delay(ms)': 6000, 'delay(s)': 6}
-# ]
-is_clear = False
 
 pickProfile = []
 def on_click(x, y, button, pressed):
@@ -160,7 +154,6 @@ def on_click(x, y, button, pressed):
     status.config(text=f"> Mouse Clicked at {(x,y)}")
     headers = {'Activity': None, 'X': None, 'Y': None, 'Button': None, 'delay(s)': None}
 
-    # call Listener.stop from anywhere,
     # raise StopException or return False from a callback to stop the listener.
     if not pressed:
         if is_clear:
@@ -169,7 +162,7 @@ def on_click(x, y, button, pressed):
         if location:
             pickProfile.append(
                 {
-                    "Activity": "activity",
+                    "Activity": f"activity{len(pickProfile)+1}",
                     "X": location["x"],
                     "Y": location["y"],
                     "Button": location["btn"],
@@ -182,8 +175,10 @@ def on_click(x, y, button, pressed):
             is_clear = False   # change value of global variable
 
         click_thread.profile = pickProfile
-        # Stop listener
-        return False
+        keylistener.stop()
+        mouselistener.stop()
+        root.deiconify()
+
 
 def remove_loaded_data():
     global is_clear
@@ -192,27 +187,36 @@ def remove_loaded_data():
     status.config(text="> Removed Loaded Data...")
 
 
-def on_closing():
+def on_closing(thread):
+    global click_thread
+    click_thread = thread
     if click_thread.is_alive():
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             click_thread.exit()
+            mouselistener.stop() if mouselistener else None
+            keylistener.stop() if keylistener else None
             root.destroy()
     else:
         root.destroy()
 
 
 def select_record():
-    if tree.get_children():
-        activity_entry.delete(0, END)
-        x_entry.delete(0, END)
-        y_entry.delete(0, END)
-        delay_entry.delete(0, END)
+    try:
+        if tree.get_children():
+            activity_entry.delete(0, END)
+            x_entry.delete(0, END)
+            y_entry.delete(0, END)
+            delay_entry.delete(0, END)
 
-        values = tree.item(tree.focus(), "values")
-        activity_entry.insert(0, values[0])
-        x_entry.insert(0, values[1])
-        y_entry.insert(0, values[2])
-        delay_entry.insert(0, values[4])
+            row = tree.item(tree.focus(), "values")
+            activity_entry.insert(0, row[0])
+            x_entry.insert(0, row[1])
+            y_entry.insert(0, row[2])
+            checkValue.set("L") if str(row[3]).strip() == "L" else checkValue.set("R")
+            delay_entry.insert(0, row[4])
+    except IndexError:
+        pass
+
 
 
 def update_record():
@@ -226,13 +230,14 @@ def update_record():
                 activity_entry.get(),
                 x_entry.get(),
                 y_entry.get(),
-                "L",
+                checkValue.get(),
                 delay_entry.get(),
             ),
         )
         activity_entry.delete(0, END)
         x_entry.delete(0, END)
         y_entry.delete(0, END)
+        checkValue.set("L")
         delay_entry.delete(0, END)
 
 
@@ -272,6 +277,7 @@ pickBtn.config(command=pickLocation)
     x_entry,
     y_entry,
     delay_entry,
+    checkValue,
 ) = widgets.get_profile_frame_items(root)
 selectbtn.configure(command=select_record)
 updatebtn.configure(command=update_record)
@@ -285,7 +291,6 @@ updatebtn.configure(command=update_record)
     startClickBtn,
     stopClickBtn,
 ) = widgets.get_clicking_options_items(root)
-
 startClickBtn.config(command=start_click)
 stopClickBtn.config(command=stop_click)
 
@@ -296,7 +301,8 @@ status = widgets.get_status_bar(root)
 
 fast_load()
 root.bell()
-root.protocol("WM_DELETE_WINDOW", on_closing)
-root.focus_force()
-root.grab_set()
+root.protocol("WM_DELETE_WINDOW", lambda: on_closing(click_thread))
+root.attributes('-topmost',True)
+
+a = threading.Thread(target=pickLocation)
 root.mainloop()
