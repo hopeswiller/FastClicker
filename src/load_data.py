@@ -1,4 +1,8 @@
-import os, sys
+"""Implements all methods to load data from excel file."""
+__all__ = ["get_click_profile", "get_nth_key"]
+
+import os
+import sys
 import openpyxl as xl
 
 

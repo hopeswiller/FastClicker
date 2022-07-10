@@ -24,8 +24,9 @@ Openpyxl = "3.0.10"
 
 ## Setup
 
-+ Run ```pipenv install```
-+ Run ```cd cmd && ./start.sh```
++ Run ```make help``` to know the available commands to run
++ Run ```make create-setup-env``` to create setup a virtual environment
++ Run ```make run-app``` to start the application
 
 ## Features
 
@@ -42,11 +43,12 @@ List of features ready and TODOs for future development
 - [x] Pick Mouse Locations
 - [x] Application is DPI aware
 - [x] Use of mutliple threads for processing
+- [x] Added testcase using pytest
 
 TODOs:
 
-- [ ] Refactor code
-- [ ] Fix minor issues/bugs
+- [x] Refactor code
+- [x] Fix minor issues/bugs
 
 REMOVED:
 

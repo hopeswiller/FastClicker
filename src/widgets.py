@@ -1,5 +1,18 @@
 import sys
-from tkinter import *
+from tkinter import (
+    Menu,
+    Button,
+    LabelFrame,
+    Label,
+    Entry,
+    Checkbutton,
+    StringVar,
+    Scrollbar,
+    SUNKEN,
+    BOTTOM,
+    W,
+    X,
+)
 from tkinter import ttk
 
 
@@ -9,8 +22,8 @@ def set_window(root, width, height, resizable=True):
     """
     root.title("FastClicker")
 
-    # running interactively
-    if sys.stdin and sys.stdin.isatty():
+    # running interactively or local
+    if (sys.stdin and sys.stdin.isatty()) or "pytest" in sys.modules:
         root.iconbitmap("assets/icon.ico")
     else:
         root.iconbitmap("icon.ico")

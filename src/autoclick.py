@@ -1,8 +1,6 @@
 # threading needed to control the clicks
 # so we inherit the class
-import sys
 import threading
-import time
 from pynput.mouse import Button, Controller
 
 mouse = Controller()
@@ -57,7 +55,9 @@ class AutoClicker(threading.Thread):
             print("Program Running...")
             if self.running:
                 if self.app_counter < int(self.repetitions):
-                    self.status_msg.config(text=f"> Program Running Repeat {self.app_counter+1}...")
+                    self.status_msg.config(
+                        text=f"> Program Running Repeat {self.app_counter+1}..."
+                    )
 
                     counter = 0
                     while self.running and counter < len(self.profile):
@@ -66,7 +66,7 @@ class AutoClicker(threading.Thread):
                                 break
                             print(f"Click Activity: {item['Activity']}")
                             self.move_mouse(item["X"], item["Y"])
-                            
+
                             # if not self.running:
                             if exit_event.is_set():
                                 break
@@ -81,7 +81,11 @@ class AutoClicker(threading.Thread):
 
                             counter += 1
 
-                    print(f">> {self.time_between_repeats} secs delay for next repeat <<")
-                    delay_event.wait(self.time_between_repeats)  # time between every repeat
+                    print(
+                        f">> {self.time_between_repeats} secs delay for next repeat <<"
+                    )
+                    delay_event.wait(
+                        self.time_between_repeats
+                    )  # time between every repeat
                     self.app_counter += 1
-                    print(f">> Next Repetition...<<")
+                    print(">> Next Repetition...<<")

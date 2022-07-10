@@ -2,7 +2,7 @@ import sysconfig, sys, os
 import uuid
 from cx_Freeze import setup, Executable
 
-version = "1.0.5"
+version = "1.0.6"
 app_name = "FastClicker"
 release_name = f'{app_name}.v{version.split(".")[0]}'
 

@@ -1,0 +1,11 @@
+[flake8]
+exclude = 
+    .git,
+    *migrations*,
+    *.lock
+    __pycache__,
+    docs/source/conf.py,
+    old,
+    build,
+    dist
+max-line-length = 119

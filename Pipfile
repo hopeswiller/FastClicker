@@ -7,6 +7,10 @@ name = "pypi"
 cx-freeze = "*"
 pynput = "*"
 openpyxl = "*"
+pytest = "*"
+pytest-cov = "*"
+black = "*"
+flake8 = "*"
 
 [dev-packages]
 
